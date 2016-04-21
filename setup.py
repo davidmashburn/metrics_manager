@@ -13,7 +13,7 @@ setup(
     scripts=[],
     url='http://pypi.python.org/pypi/metrics_manager/',
     license='LICENSE.txt',
-    description='<ADD DESCRIPTION>',
+    description='Generic system for defining, handling, storing, and loading metrics',
     long_description=open('README.txt').read(),
     install_requires=['numpy>=1.0',
                       
