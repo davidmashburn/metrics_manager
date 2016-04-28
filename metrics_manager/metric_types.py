@@ -13,6 +13,13 @@ def get_time_axis(arr, frame_rate, start_frame=0):
        uniform time axes easier'''
     return start_frame + np.arange(len(arr)) * frame_rate
 
+def time_inds_cleaner(time_inds, length):
+    '''If time_inds is a singleton (integer) use it as a
+       downsampling factor instead'''
+    return (np.array(time_inds) if hasattr(time_inds, '__len__') else
+            np.arange(0, length, time_inds))
+
+
 class Metric(object):
     def __init__(self, name, data):
         self.name = name
@@ -31,9 +38,10 @@ class TimeMetric(Metric):
 #    def __init__(self, name, arr, step, start=0):
 
 class SparseTimeMetric(TimeMetric):
-    def __init__(self, name, arr, time_arr):
-        TimeMetric.__init__(self, name, arr, 1)
-        self.time_axis = time_arr
+    def __init__(self, name, arr, step, time_inds):
+        TimeMetric.__init__(self, name, arr, step)
+        self.time_inds = time_inds_cleaner(time_inds, self.length)
+        self.sparse_time_axis = self.time_axis[self.time_inds]
 
 class TimeMetric2D(TimeMetric):
     def __init__(self, name, arr2d, tstep, ystep=1, tstart=0, ystart=0):
@@ -50,6 +58,12 @@ class TimeMetric2D(TimeMetric):
         
         self.extent = [self.tstart, self.tstop,
                        self.ystart, self.ystop] # needed for passing to imshow
+
+class SparseTimeMetric2D(TimeMetric):
+    def __init__(self, name, arr2d, tstep, time_inds, ystep=1, ystart=0):
+        TimeMetric2D.__init__(self, name, arr2d, tstep, ystep=ystep, ystart=ystart)
+        self.time_inds = time_inds_cleaner(time_inds, self.length)
+        self.sparse_time_axis = self.time_axis[self.time_inds]
 
 if __name__ == '__main__':
     pass
