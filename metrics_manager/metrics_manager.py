@@ -7,7 +7,7 @@ import numpy as np
 
 from np_utils import linrange, split_list_on_condition, identity, groupByFunction, doublewrap, rotate_dict_of_lists
 
-from argument_handling import ag
+from argument_handling import ag, process_args
 from metric_storage_interface import NpyStorageInterface
 
 #def _call_keys(keys, function_dict):
@@ -20,8 +20,13 @@ def _assert_no_diff(a, b, message=None):
     assert not diff, message + ': {}'.format(diff)
 
 class MetricsManager(object):
-    '''Object to manage metrics for a single video file and act as a go-between
-       for the storage interface and the individual metric definitions '''
+    '''Object to manage metrics for a single file and act as a go-between
+       for the storage interface and the individual metric definitions
+       
+       * performs all computations for individual metrics
+       * processes metric definitions data (see __init__)
+       * interfaces with the storage interface (save, load)
+       * maintains an in-memory cacheing system (metrics_dict)'''
     def __init__(self, filename, storage_interface, metrics_definitions,
                  metrics_dict=None):
         '''Just a way to group some oft-used parameters and provide easy cacheing
