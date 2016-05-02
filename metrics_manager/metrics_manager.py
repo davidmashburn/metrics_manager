@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from np_utils import linrange, split_list_on_condition, identity, groupByFunction, doublewrap, rotate_dict_of_lists
+from np_utils import rotate_dict_of_lists
 
 from argument_handling import ag, process_args
 from metric_storage_interface import NpyStorageInterface
@@ -40,7 +40,7 @@ class MetricsManager(object):
                               # right kind of processing
             compute function, # A function that computes the metric (optional)
             extra arguments]  # Any other arguments to the Metric sub-class
-                              # past the standard two (name, data) -- (optional)
+                              # past the standard two (name, data) (optional)
             
             metrics_definitions is list of lists of 3-5 elements
             
@@ -62,7 +62,7 @@ class MetricsManager(object):
                 - a number or array that the loaded metric is divided by
             
             Sample row:
-              {'name': [TimeMetric2D, some_function, ag(('time_thing', 10), ystep=4, ystart=15)]
+              ['name', TimeMetric2D, SOMETYPE, some_function, ag(('time_thing', 10), ystep=4, ystart=15)]
            '''
         self.filename = filename
         self.storage_interface = storage_interface
@@ -119,14 +119,3 @@ class MetricsManager(object):
         '''Generate and cache metrics and then build metrics classes'''
         self.compute_metrics(metrics, force_resave)
         return {m: self.load_metric(m) for m in metrics}
-
-# "Pseudo-code" basic example usage:
-# find_color = lambda img_arr: np.mean(img_arr, axis=0)
-# METRICS_DEFINITIONS = [['extension', Metric, 'metadata'],
-#                        ['color', Metric, 'image', find_color],
-#                        ['mean_value', Metric, 'image', np.mean]]
-# f = '/somefile.img'
-# mm = VideoMetricsManager(f, NpyStorageInterface(), METRICS_DEFINITIONS)
-# mm.get_metrics(['extension', 'color', 'mean_value'],
-#                #force_resave=True,
-# )
