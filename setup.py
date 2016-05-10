@@ -16,6 +16,7 @@ setup(
     description='Generic system for defining, handling, storing, and loading metrics',
     long_description=open('README.txt').read(),
     install_requires=['numpy>=1.0',
-                      'np_utils>=0.4.4'
+                      'np_utils>=0.4.4',
+                      'toposort>=1.4',
                      ],
 )

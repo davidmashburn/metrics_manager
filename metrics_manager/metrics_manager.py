@@ -7,7 +7,7 @@ import numpy as np
 
 from np_utils import rotate_dict_of_lists
 
-from argument_handling import ag, process_args
+from argument_handling import ag, process_args, metrics_dependency_sort
 from metric_storage_interface import NpyStorageInterface
 
 #def _call_keys(keys, function_dict):
@@ -74,7 +74,6 @@ class MetricsManager(object):
          self.metric_type,
          self.metric_compute_function,
          self.metric_extra_arguments) = rotate_dict_of_lists(_metrics_definitions_dict)
-        
         self.metrics_dict = metrics_dict # the cache
 
     def _load_metric(self, metric_name):
