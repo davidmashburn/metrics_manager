@@ -5,6 +5,7 @@
    such as a large binary or video file'''
 
 import os
+import shutil
 import numpy as np
 
 try:
@@ -54,6 +55,8 @@ class FileBasedStorageInterface(MetricsStorageInterface):
 def _to_flat(x):
     return (x.tolist() if type(x) == np.ndarray else x)
 
+TMPEXT = '.tmp'
+
 class JsonStorageInterface(FileBasedStorageInterface):
     def __init__(self):
         FileBasedStorageInterface.__init__(self, file_ext='.json')
@@ -64,7 +67,8 @@ class JsonStorageInterface(FileBasedStorageInterface):
     
     def save_metric(self, root_file, metric_name, metric_data):
         filepath = self._get_metric_filename(root_file, metric_name)
-        json.dump(filepath, _to_flat(metric_data)) # Force numpy arrays to lists
+        json.dump(filepath + TMPEXT, _to_flat(metric_data)) # Force numpy arrays to lists
+        shutil.move(filepath + TMPEXT, filepath)
 
 # Npy is a actually a great storage format for this:
 class NpyStorageInterface(FileBasedStorageInterface):
@@ -77,7 +81,8 @@ class NpyStorageInterface(FileBasedStorageInterface):
     
     def save_metric(self, root_file, metric_name, metric_data):
         filepath = self._get_metric_filename(root_file, metric_name)
-        np.save(filepath, metric_data)
+        np.save(filepath + TMPEXT, metric_data)
+        shutil.move(filepath + TMPEXT, filepath)
 
 # This could work by storing a "document" version of a number of different
 # metrics in a single file which would cut down on file usage, but make
