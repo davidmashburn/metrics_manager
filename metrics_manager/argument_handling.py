@@ -1,6 +1,6 @@
 '''Argument processing helper functions'''
 
-from functools import partial, wraps
+from functools import partial
 import toposort
 
 import numpy as np
@@ -129,23 +129,3 @@ def metrics_dependency_sort(metrics, metrics_definitions):
 def print_metrics_msg(msg, metrics, use_print):
     if use_print and metrics:
         print msg+':', ', '.join(metrics)
-
-def enable_metric_save(f):
-    @wraps(f)
-    def newf(self, metrics, save=True, use_print=True):
-        _print = lambda msg: print_metrics_msg(msg, metrics, use_print)
-        if metrics:
-            _print('Computing the following metrics')
-            retval = f(self, metrics)
-            _print('Successfully computed')
-            if save:
-                _print('Saving')
-                for m in metrics:
-                    self.save_metric(m)
-                _print('Saved')
-        else:
-            _print('No metrics requested, skipping!')
-            retval = {}
-        
-        return retval
-    return newf
