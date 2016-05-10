@@ -83,10 +83,10 @@ def find_metrics_dependencies(metric_definitions):
         else:
             args, kwds = d[EXTRA_ARGS_INDEX] # the extra arguments
             all_args = list(args) + kwds.values()
-            all_args = [(i[0] if type(i) is tuple)
+            all_args = [i[0] if type(i) is tuple else i
                         for i in all_args]
             deps_set = {i for i in all_args
-                        if i type(i) is string}
+                        if type(i) is string}
             metrics_dependencies[m] = deps_set
 
     return metrics_dependencies
