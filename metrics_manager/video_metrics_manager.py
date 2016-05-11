@@ -217,7 +217,11 @@ class VideoMetricsManager(MetricsManager):
            Generate new metrics, load existing metrics
            Auto-save, auto-cache, etc'''
         # Determine which metrics already exist (or overwrite them all if force_resave is True)
-        makeifnotexists(os.path.join(os.path.dirname(self.filename), 'metrics')) # technically this is only for file-based, but whatever
+        if hasattr(self.storage_interface, 'metrics_dir'):
+            metrics_dir = (os.path.join(os.path.dirname(self.filename), 'metrics')
+                           if self.storage_interface.metrics_dir is None else
+                           self.storage_interface.metrics_dir)
+            makeifnotexists(metrics_dir)
         exists = (False if force_resave else
                   lambda m: self.storage_interface.exists(self.filename, m))
         existing_metrics, new_metrics = split_list_on_condition(metrics, exists)

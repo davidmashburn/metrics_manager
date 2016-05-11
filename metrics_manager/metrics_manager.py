@@ -74,7 +74,7 @@ class MetricsManager(object):
          self.metric_type,
          self.metric_compute_function,
          self.metric_extra_arguments) = rotate_dict_of_lists(_metrics_definitions_dict)
-        self.metrics_dict = metrics_dict # the cache
+        self.metrics_dict = {} if metrics_dict is None else metrics_dict # the cache
 
     def _load_metric(self, metric_name):
         '''Load metric data from the cache or storage interface

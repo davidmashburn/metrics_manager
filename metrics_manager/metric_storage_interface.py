@@ -27,13 +27,16 @@ class MetricsStorageInterface(object):
         pass
 
 class FileBasedStorageInterface(MetricsStorageInterface):
-    def __init__(self, file_ext):
+    def __init__(self, file_ext, metrics_dir=None):
         self.file_ext=file_ext
+        self.metrics_dir = metrics_dir
 
-    def _get_metric_filename(self, root_file, metric_name):
+    def _get_metric_filename(self, root_file, metric_name, metrics_dir=None):
         '''Rework the filepath of the root file into a filepath to a metric'''
         root_dir, root_name = os.path.split(root_file)
-        metrics_dir = os.path.join(root_dir, 'metrics')
+        metrics_dir = (metrics_dir if metrics_dir is not None else
+                       self.metrics_dir if self.metrics_dir is not None else
+                       os.path.join(root_dir, 'metrics'))
         new_name = root_name.replace('.', '_') + '_' + metric_name + self.file_ext
         filename = os.path.join(metrics_dir, new_name)
         return filename
@@ -55,11 +58,14 @@ class FileBasedStorageInterface(MetricsStorageInterface):
 def _to_flat(x):
     return (x.tolist() if type(x) == np.ndarray else x)
 
-TMPEXT = '.tmp'
+def _create_tmp(filepath):
+    '''Change something.ext into something.tmp.ext'''
+    f, ext = os.path.splitext(filepath)
+    return f + '.tmp' + ext
 
 class JsonStorageInterface(FileBasedStorageInterface):
-    def __init__(self):
-        FileBasedStorageInterface.__init__(self, file_ext='.json')
+    def __init__(self, metrics_dir=None):
+        FileBasedStorageInterface.__init__(self, file_ext='.json', metrics_dir=metrics_dir)
     
     def get_metric(self, root_file, metric_name):
         filepath = self._get_metric_filename(root_file, metric_name)
@@ -67,13 +73,14 @@ class JsonStorageInterface(FileBasedStorageInterface):
     
     def save_metric(self, root_file, metric_name, metric_data):
         filepath = self._get_metric_filename(root_file, metric_name)
-        json.dump(filepath + TMPEXT, _to_flat(metric_data)) # Force numpy arrays to lists
-        shutil.move(filepath + TMPEXT, filepath)
+        tmp = _create_tmp(filepath)
+        json.dump(tmp, _to_flat(metric_data)) # Force numpy arrays to lists
+        shutil.move(tmp, filepath)
 
 # Npy is a actually a great storage format for this:
 class NpyStorageInterface(FileBasedStorageInterface):
-    def __init__(self):
-        FileBasedStorageInterface.__init__(self, file_ext='.npy')
+    def __init__(self, metrics_dir=None):
+        FileBasedStorageInterface.__init__(self, file_ext='.npy', metrics_dir=metrics_dir)
     
     def get_metric(self, root_file, metric_name):
         filepath = self._get_metric_filename(root_file, metric_name)
@@ -81,8 +88,9 @@ class NpyStorageInterface(FileBasedStorageInterface):
     
     def save_metric(self, root_file, metric_name, metric_data):
         filepath = self._get_metric_filename(root_file, metric_name)
-        np.save(filepath + TMPEXT, metric_data)
-        shutil.move(filepath + TMPEXT, filepath)
+        tmp = _create_tmp(filepath)
+        np.save(tmp, metric_data)
+        shutil.move(tmp, filepath)
 
 # This could work by storing a "document" version of a number of different
 # metrics in a single file which would cut down on file usage, but make
