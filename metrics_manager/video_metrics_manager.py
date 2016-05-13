@@ -284,7 +284,7 @@ class VideoMetricsManager(MetricsManager):
 #   B. a number (or an array, or whatever)                             #
 #   * a tuple pair combining these:                                    #
 #     - a metric string to load                                        #
-#     - a number or array that the loaded metric is divided by         #
+#     - a number or array that the loaded metric is multiplied by      #
 #                                                                      #
 # Sample row:                                                          #
 #    ['name', TimeMetric2D, AUDIO, some_function,                      #

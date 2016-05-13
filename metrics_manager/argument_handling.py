@@ -19,7 +19,7 @@ def _unpack_val(load_fun, x):
        B. a number (or an array, or whatever)
           * a tuple pair combining these:
             - a metric string to load
-            - a number or array that the loaded metric is divided by'''
+            - a number or array that the loaded metric is multiplied by'''
     #Optionally unpack a tuple:
     numerical_types = [int, long, float, np.ndarray]
     try:
@@ -34,7 +34,7 @@ def _unpack_val(load_fun, x):
     if type(x) is str:
         x = load_fun(x)
     
-    return x / multiplier
+    return x * multiplier
 
 def process_args(metric_class, some_ag, load_fun, verify_usage=True):
     '''Unpack the arguments, load any metrics needed for cumputation

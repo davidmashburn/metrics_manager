@@ -59,7 +59,7 @@ class MetricsManager(object):
               B. a number (or an array, or whatever)
               * a tuple pair combining these:
                 - a metric string to load
-                - a number or array that the loaded metric is divided by
+                - a number or array that the loaded metric is multiplied by
             
             Sample row:
               ['name', TimeMetric2D, SOMETYPE, some_function, ag(('time_thing', 10), ystep=4, ystart=15)]
