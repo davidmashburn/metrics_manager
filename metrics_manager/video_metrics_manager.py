@@ -24,6 +24,7 @@ METADATA = 'metadata'
 AUDIO = 'audio'
 VIDEO = 'video'
 SPARSE_VIDEO = 'sparse_video'
+DERIVED = 'derived'
 
 # Basic metrics names:
 VIDEO_NUM_FRAMES = 'video_num_frames'
@@ -146,6 +147,10 @@ def compute_video_metrics_sparse(video_file,
                 
     return computed_values_dict
 
+def compute_derived_metrics(video_file, metrics, metrics_function_dict, loader, verbose=True):
+    computed_derived_metrics = {m: metrics_function_dict[m](loader) for m in metrics}
+    return computed_derived_metrics
+
 ##########################################################################
 ## Define MetricsManager and accompanying argument processing functions ##
 ##########################################################################
@@ -212,6 +217,11 @@ class VideoMetricsManager(MetricsManager):
         self._metrics_compute(SPARSE_VIDEO, compute_video_metrics_sparse, metrics, verbose, save,
                               num_frames, self.metric_compute_function, self.metric_extra_arguments)
     
+    def _compute_derived_metrics(self, metrics, verbose=True, save=True):
+        for m in metrics: # Do these one-by-one
+            self._metrics_compute(DERIVED, compute_derived_metrics, [m], verbose, save,
+                                  self.metric_compute_function, self._load_metric)
+    
     def compute_metrics(self, metrics, force_resave=False, verbose=True, save=True):
         '''New central processing zone
            Generate new metrics, load existing metrics
@@ -241,6 +251,7 @@ class VideoMetricsManager(MetricsManager):
         self._compute_audio_metrics(grouped_metrics[AUDIO], verbose=verbose, save=save)
         self._compute_video_metrics(grouped_metrics[VIDEO], verbose=verbose, save=save)
         self._compute_sparse_video_metrics(grouped_metrics[SPARSE_VIDEO], verbose=verbose, save=save)
+        self._compute_derived_metrics(grouped_metrics[DERIVED], verbose=verbose, save=save)
         
         if verbose:
             print 'Finish compute'
