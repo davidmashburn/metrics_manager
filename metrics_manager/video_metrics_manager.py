@@ -163,19 +163,18 @@ def compute_derived_metrics(video_file, metrics, metrics_function_dict, loader, 
 class VideoMetricsManager(MetricsManager):
     '''Object to manage metrics for a single video file and act as a go-between
        for the storage interface and the individual metric definitions'''
-    def __init__(self, filename, storage_interface, metrics_definitions_dict,
+    def __init__(self, filename, storage_interface, metrics_definitions,
                  metrics_dict=None):
         '''Just a way to group some oft-used parameters and provide easy cacheing'''
         MetricsManager.__init__(self, filename, storage_interface,
-                                metrics_definitions_dict,
+                                metrics_definitions,
                                 metrics_dict=metrics_dict)
     
     def _metrics_compute(self, type_name, compute_function, metrics, verbose, save, *args, **kwds):
         '''Call one of the metric compute functions above
            (passed as the "compute_function" argument)
            Also handles printing messages, caching, and saving'''
-        verbose = kwds['verbose'] if 'verbose' in kwds else True # pass "verbose" on to wrapped function
-        save = kwds.pop('save', True)                            # but pop "save" and remove it
+        kwds['verbose'] = verbose # pass "verbose" on to wrapped function
         _print = lambda msg: print_metrics_msg(msg, metrics, verbose)
         
         if verbose:
