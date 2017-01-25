@@ -100,7 +100,9 @@ def compute_video_metrics(video_file, metrics, num_frames, metrics_functions_dic
             print 'process_frame {} out of {}'.format(i, num_frames)
         
         ret, frame = cap.read()
-        assert frame is not None, 'Bad frame! (possible binary search issue)'
+        msg = '\n'.join(['Bad frame! (possible binary search issue) in file:',
+                         video_file])
+        assert frame is not None, msg
         last_a = compute_frame_metrics(frame, computed_values_dict, metrics, 
                                        metrics_functions_dict, last_a=last_a)
     
