@@ -1,7 +1,10 @@
 '''Extension of MetricsManager to deal with videos, including
    an example of usage on a sample video (downloaded as needed)'''
 
+from __future__ import absolute_import
+from __future__ import print_function
 from __future__ import division
+
 import os
 from collections import defaultdict
 
@@ -11,11 +14,11 @@ import pydub
 
 from np_utils.gen_utils import makeifnotexists
 from np_utils import split_list_on_condition, identity, groupByFunction, fL
-from metric_storage_interface import NpyStorageInterface
-from metric_types import (Metric, TimeMetric, SparseTimeMetric, TimeMetric2D,
-                          SparseTimeMetric2D, time_inds_cleaner)
-from argument_handling import ag, print_metrics_msg
-from metrics_manager import MetricsManager
+from .metric_storage_interface import NpyStorageInterface
+from .metric_types import (Metric, TimeMetric, SparseTimeMetric, TimeMetric2D,
+                           SparseTimeMetric2D, time_inds_cleaner)
+from .argument_handling import ag, print_metrics_msg
+from .metrics_manager import MetricsManager
 
 from wxPyGameVideoPlayer import cv2_utils
 
@@ -97,7 +100,7 @@ def compute_video_metrics(video_file, metrics, num_frames, metrics_functions_dic
     computed_values_dict = defaultdict(list)
     for i in range(num_frames):
         if verbose:
-            print 'process_frame {} out of {}'.format(i, num_frames)
+            print('process_frame {} out of {}'.format(i, num_frames))
         
         ret, frame = cap.read()
         msg = '\n'.join(['Bad frame! (possible binary search issue) in file:',
@@ -138,7 +141,7 @@ def compute_video_metrics_sparse(video_file,
     computed_values_dict = defaultdict(list)
     for i in all_indices:
         if verbose:
-            print 'process_frame {} - last frame {}'.format(i, all_indices[-1])
+            print('process_frame {} - last frame {}'.format(i, all_indices[-1]))
         
         frame = cv2_utils.get_opencv_frame_as_array(video_file, i, frame_rate)
         metric_names_to_run = [m for m, inds in zip(metrics, index_lists)
@@ -180,7 +183,7 @@ class VideoMetricsManager(MetricsManager):
         _print = lambda msg: print_metrics_msg(msg, metrics, verbose)
         
         if verbose:
-            print 'Start computing', type_name, 'metrics'
+            print('Start computing', type_name, 'metrics')
         
         if metrics:
             _print('Computing the following metrics')
@@ -197,7 +200,7 @@ class VideoMetricsManager(MetricsManager):
             retval = {}
         
         if verbose:
-            print 'Finished computing', type_name, 'metrics'
+            print('Finished computing', type_name, 'metrics')
         
         return retval
     
@@ -247,7 +250,7 @@ class VideoMetricsManager(MetricsManager):
             groupByFunction(new_metrics, lambda m: self.metric_type[m]))
         
         if verbose:
-            print 'Start compute'
+            print('Start compute')
         self._compute_metadata_metrics(grouped_metrics[METADATA], verbose=verbose, save=save)
         self._compute_audio_metrics(grouped_metrics[AUDIO], verbose=verbose, save=save)
         self._compute_video_metrics(grouped_metrics[VIDEO], verbose=verbose, save=save)
@@ -255,7 +258,7 @@ class VideoMetricsManager(MetricsManager):
         self._compute_derived_metrics(grouped_metrics[DERIVED], verbose=verbose, save=save)
         
         if verbose:
-            print 'Finish compute'
+            print('Finish compute')
 
 ########################################################################
 #   Create "metrics_definitions" below using the MetricsManager DSL    #
@@ -298,11 +301,11 @@ if __name__ == '__main__':
     f = os.path.expanduser('~/sciencecasts-_total_eclipse_of_the_moon.mp4')
     
     if not os.path.exists(f):
-        print 'File not available, downloading to ' + f
+        print('File not available, downloading to ' + f)
         import urllib
         url = 'http://www.nasa.gov/downloadable/videos/sciencecasts-_total_eclipse_of_the_moon.mp4'
         urllib.urlretrieve(url, f)
-        print 'Finished downloading'
+        print('Finished downloading')
     
     metrics_definitions = [
         #Metadata metrics:

@@ -1,5 +1,7 @@
 '''Argument processing helper functions'''
 
+from __future__ import print_function
+
 from functools import partial
 import toposort
 
@@ -128,4 +130,4 @@ def metrics_dependency_sort(metrics, metrics_definitions):
 
 def print_metrics_msg(msg, metrics, use_print):
     if use_print and metrics:
-        print msg+':', ', '.join(metrics)
+        print(msg+':', ', '.join(metrics))

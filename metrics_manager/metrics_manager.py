@@ -3,12 +3,14 @@
    
    Extend the class to implement specific behaviors for metric types'''
 
+from __future__ import absolute_import
+
 import numpy as np
 
 from np_utils import rotate_dict_of_lists
 
-from argument_handling import ag, process_args, metrics_dependency_sort
-from metric_storage_interface import NpyStorageInterface
+from .argument_handling import ag, process_args, metrics_dependency_sort
+from .metric_storage_interface import NpyStorageInterface
 
 #def _call_keys(keys, function_dict):
 #    return {function_dict[k]() for k in keys}
