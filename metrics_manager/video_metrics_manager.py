@@ -53,10 +53,10 @@ def compute_metadata_metrics(video_file, metrics, verbose=True):
        metric every time because they are all small'''
     aud = pydub.AudioSegment.from_file(video_file)
     d = {}
-    d[VIDEO_NUM_FRAMES] = cv2_utils.binary_search_end(video_file)
+    d[VIDEO_NUM_FRAMES] = int(cv2_utils.binary_search_end(video_file) + 1)
     d[VIDEO_FPS] = cv2_utils.get_frame_rate(video_file)
     d[VIDEO_SAMPLING_INTERVAL] = 1. / d[VIDEO_FPS]
-    d[AUDIO_NUM_SAMPLES] = aud.frame_count()
+    d[AUDIO_NUM_SAMPLES] = int(aud.frame_count())
     d[AUDIO_FPS] = aud.frame_rate
     d[AUDIO_SAMPLING_INTERVAL] = 1. / d[AUDIO_FPS]
     return d
@@ -187,6 +187,10 @@ class VideoMetricsManager(MetricsManager):
         
         if metrics:
             _print('Computing the following metrics')
+            _print(metrics)
+            #print(compute_function.__doc__)
+            #print(self.filename, metrics, *args)
+            #print(kwds)
             retval = self.metrics_dict.update(compute_function(
                 self.filename, metrics, *args, **kwds))
             _print('Successfully computed')

@@ -69,13 +69,18 @@ class MetricsManager(object):
         self.filename = filename
         self.storage_interface = storage_interface
         
+        def _ensure_4_dicts(x):
+            return (x if len(x) >= 4 else
+                    x + [{} for i in range(4 - len(x))])
+
+
         # Generate the four dictionaries from the metrics definitions:
         # class, type, compute function, and extra arguments
         _metrics_definitions_dict = {i[0]: i[1:] for i in metrics_definitions}
         (self.metric_class,
          self.metric_type,
          self.metric_compute_function,
-         self.metric_extra_arguments) = rotate_dict_of_lists(_metrics_definitions_dict)
+         self.metric_extra_arguments) = _ensure_4_dicts(rotate_dict_of_lists(_metrics_definitions_dict))
         self.metrics_dict = {} if metrics_dict is None else metrics_dict # the cache
 
     def _load_metric(self, metric_name):

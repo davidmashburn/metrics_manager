@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from functools import partial
 import toposort
+from future.utils import lmap
 
 import numpy as np
 
@@ -23,7 +24,7 @@ def _unpack_val(load_fun, x):
             - a metric string to load
             - a number or array that the loaded metric is multiplied by'''
     #Optionally unpack a tuple:
-    numerical_types = [int, long, float, np.ndarray]
+    numerical_types = [int, float, np.ndarray]  # removed long for python 3
     try:
         if type(x[0]) is str and type(x[1]) in numerical_types:
             x, multiplier = x
@@ -52,8 +53,8 @@ def process_args(metric_class, some_ag, load_fun, verify_usage=True):
     # Grab the actual args and kwds
     unpack = partial(_unpack_val, load_fun)
     args, kwds = some_ag
-    args = map(unpack, args)
-    kwds = {k: unpack(v) for k, v in kwds.iteritems()}
+    args = lmap(unpack, args)
+    kwds = {k: unpack(v) for k, v in kwds.items()}
     
     if verify_usage:
         nargs = len(args)
