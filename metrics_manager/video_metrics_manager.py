@@ -186,8 +186,7 @@ class VideoMetricsManager(MetricsManager):
             print('Start computing', type_name, 'metrics')
         
         if metrics:
-            _print('Computing the following metrics')
-            _print(metrics)
+            _print('Computing')
             #print(compute_function.__doc__)
             #print(self.filename, metrics, *args)
             #print(kwds)
