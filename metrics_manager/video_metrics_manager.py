@@ -24,6 +24,7 @@ from wxPyGameVideoPlayer import cv2_utils
 
 # Metric types:
 METADATA = 'metadata'
+GENERIC = 'generic'
 AUDIO = 'audio'
 VIDEO = 'video'
 SPARSE_VIDEO = 'sparse_video'
@@ -60,6 +61,12 @@ def compute_metadata_metrics(video_file, metrics, verbose=True):
     d[AUDIO_FPS] = aud.frame_rate
     d[AUDIO_SAMPLING_INTERVAL] = 1. / d[AUDIO_FPS]
     return d
+
+def compute_generic_metrics(video_file, metrics, metrics_function_dict, verbose=True):
+    '''Generic metrics just take the video file name as input'''
+    computed_generic_metrics = {m: metrics_function_dict[m](video_file)
+                                for m in metrics}
+    return computed_generic_metrics
 
 def compute_audio_metrics(video_file, metrics, metrics_function_dict, verbose=True):
     audio_fps, a = cv2_utils.mp4_to_array(video_file)
@@ -210,6 +217,10 @@ class VideoMetricsManager(MetricsManager):
     def _compute_metadata_metrics(self, metrics, verbose=True, save=True):
         self._metrics_compute(METADATA, compute_metadata_metrics, metrics, verbose, save)
     
+    def _compute_generic_metrics(self, metrics, verbose=True, save=True):
+        self._metrics_compute(GENERIC, compute_generic_metrics, metrics, verbose, save,
+                              self.metric_compute_function)
+
     def _compute_audio_metrics(self, metrics, verbose=True, save=True):
         self._metrics_compute(AUDIO, compute_audio_metrics, metrics, verbose, save,
                               self.metric_compute_function)
@@ -255,6 +266,7 @@ class VideoMetricsManager(MetricsManager):
         if verbose:
             print('Start compute')
         self._compute_metadata_metrics(grouped_metrics[METADATA], verbose=verbose, save=save)
+        self._compute_generic_metrics(grouped_metrics[GENERIC], verbose=verbose, save=save)
         self._compute_audio_metrics(grouped_metrics[AUDIO], verbose=verbose, save=save)
         self._compute_video_metrics(grouped_metrics[VIDEO], verbose=verbose, save=save)
         self._compute_sparse_video_metrics(grouped_metrics[SPARSE_VIDEO], verbose=verbose, save=save)
