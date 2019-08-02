@@ -226,12 +226,12 @@ class VideoMetricsManager(MetricsManager):
                               self.metric_compute_function)
     
     def _compute_video_metrics(self, metrics, verbose=True, save=True):
-        num_frames = self._load_metric(VIDEO_NUM_FRAMES)
+        num_frames = int(self._load_metric(VIDEO_NUM_FRAMES))
         self._metrics_compute(VIDEO, compute_video_metrics, metrics, verbose, save,
                               num_frames, self.metric_compute_function)
     
     def _compute_sparse_video_metrics(self, metrics, verbose=True, save=True):
-        num_frames = self._load_metric(VIDEO_NUM_FRAMES)
+        num_frames = int(self._load_metric(VIDEO_NUM_FRAMES))
         self._metrics_compute(SPARSE_VIDEO, compute_video_metrics_sparse, metrics, verbose, save,
                               num_frames, self.metric_compute_function, self.metric_extra_arguments)
     
