@@ -95,16 +95,17 @@ class JsonStorageInterface(FileBasedStorageInterface):
 
 # Npy is a actually a great storage format for this:
 class NpyStorageInterface(FileBasedStorageInterface):
-    def __init__(self, metrics_dir=None):
+    def __init__(self, metrics_dir=None, allow_pickle=False):
+        self.allow_pickle = allow_pickle
         FileBasedStorageInterface.__init__(
             self, file_ext=".npy", metrics_dir=metrics_dir
         )
 
     def _get_metric(self, filepath):
-        return np.load(filepath)
+        return np.load(filepath, allow_pickle=self.allow_pickle)
 
     def _save_metric(self, filepath, metric_data):
-        np.save(filepath, metric_data)
+        np.save(filepath, metric_data, allow_pickle=self.allow_pickle)
 
 
 # This could work by storing a "document" version of a number of different
