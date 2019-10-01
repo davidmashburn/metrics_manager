@@ -40,10 +40,13 @@ DERIVED = "derived"
 VIDEO_NUM_FRAMES = "video_num_frames"
 VIDEO_FPS = "video_fps"
 VIDEO_SAMPLING_INTERVAL = "video_sampling_interval"
+VIDEO_WIDTH = "video_width"
+VIDEO_HEIGHT = "video_height"
 
 AUDIO_NUM_SAMPLES = "audio_num_samples"
 AUDIO_FPS = "audio_fps"
 AUDIO_SAMPLING_INTERVAL = "audio_sampling_interval"
+AUDIO_WIDTH = "audio_width"
 
 AUDIO_TRACE = "audio_trace"
 
@@ -59,14 +62,23 @@ def compute_metadata_metrics(video_file, metrics, verbose=True):
     """Compute the metadata metrics
        Unlike the other metrics below, this just computes EVERY metadata
        metric every time because they are all small"""
+    num_frames = cv2_utils.binary_search_end(video_file)
+    cap = cv2.VideoCapture(video_file)
     aud = pydub.AudioSegment.from_file(video_file)
-    d = {}
-    d[VIDEO_NUM_FRAMES] = int(cv2_utils.binary_search_end(video_file) + 1)
-    d[VIDEO_FPS] = cv2_utils.get_frame_rate(video_file)
-    d[VIDEO_SAMPLING_INTERVAL] = 1.0 / d[VIDEO_FPS]
-    d[AUDIO_NUM_SAMPLES] = int(aud.frame_count())
-    d[AUDIO_FPS] = aud.frame_rate
-    d[AUDIO_SAMPLING_INTERVAL] = 1.0 / d[AUDIO_FPS]
+    video_fps = cap.get(cv2.CAP_PROP_FPS)
+    audio_fps = aud.frame_rate
+    d = {
+        VIDEO_NUM_FRAMES: num_frames,
+        VIDEO_FPS: video_fps,
+        VIDEO_SAMPLING_INTERVAL: 1 / video_fps,
+        VIDEO_WIDTH: cap.get(cv2.CAP_PROP_FRAME_WIDTH),
+        VIDEO_HEIGHT: cap.get(cv2.CAP_PROP_FRAME_HEIGHT),
+        AUDIO_NUM_SAMPLES: aud.frame_count(),
+        AUDIO_FPS: audio_fps,
+        AUDIO_SAMPLING_INTERVAL: 1 / audio_fps,
+        AUDIO_WIDTH: aud.frame_width,
+    }
+    cap.release()
     return d
 
 
@@ -415,11 +427,15 @@ if __name__ == "__main__":
     metrics_definitions = [
         # Metadata metrics:
         [VIDEO_FPS, Metric, METADATA],
-        [VIDEO_NUM_FRAMES, Metric, METADATA],
         [VIDEO_SAMPLING_INTERVAL, Metric, METADATA],
+        [VIDEO_NUM_FRAMES, Metric, METADATA],
+        [VIDEO_WIDTH, Metric, METADATA],
+        [VIDEO_HEIGHT, Metric, METADATA],
         [AUDIO_FPS, Metric, METADATA],
-        [AUDIO_NUM_SAMPLES, Metric, METADATA],
         [AUDIO_SAMPLING_INTERVAL, Metric, METADATA],
+        [AUDIO_NUM_SAMPLES, Metric, METADATA],
+        [AUDIO_WIDTH, Metric, METADATA],
+        [AUDIO_TRACE, TimeMetric, AUDIO, identity, ag(AUDIO_SAMPLING_INTERVAL)],
         # Other metrics:
         [AUDIO_TRACE, TimeMetric, AUDIO, identity, ag(AUDIO_SAMPLING_INTERVAL)],
     ]
