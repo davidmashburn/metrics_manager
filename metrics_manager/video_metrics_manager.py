@@ -182,6 +182,7 @@ def compute_video_metrics_sparse(
     frame_rate = cv2_utils.get_frame_rate(video_file)
 
     computed_values_dict = defaultdict(list)
+    last_a = None
     for i in all_indices:
         if verbose:
             print("process_frame {} - last frame {}".format(i, all_indices[-1]))
@@ -189,8 +190,12 @@ def compute_video_metrics_sparse(
         frame = cv2_utils.get_opencv_frame_as_array(video_file, i, frame_rate)
         metric_names_to_run = [m for m, inds in zip(metrics, index_lists) if i in inds]
         assert frame is not None, "Bad frame! (possible binary search issue)"
-        compute_frame_metrics(
-            frame, computed_values_dict, metric_names_to_run, metrics_functions_dict
+        last_a = compute_frame_metrics(
+            frame,
+            computed_values_dict,
+            metric_names_to_run,
+            metrics_functions_dict,
+            last_a=last_a,
         )
 
     return computed_values_dict
