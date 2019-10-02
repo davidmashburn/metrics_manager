@@ -253,6 +253,7 @@ class VideoMetricsManager(MetricsManager):
             if save:
                 _print("Saving")
                 for m in metrics:
+                    failed_to_save = []
                     try:
                         self.save_metric(m)
                     except ValueError:
