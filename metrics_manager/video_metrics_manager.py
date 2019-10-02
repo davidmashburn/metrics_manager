@@ -100,7 +100,7 @@ def _calc_metric_data(a, last_a, metric_function):
     try:
         return metric_function(a)
     except TypeError:
-        return None if last_a is None else metric_function(a, last_a)
+        return metric_function(a, last_a)
 
 
 def compute_frame_metrics(
@@ -229,6 +229,19 @@ class VideoMetricsManager(MetricsManager):
             metrics_dict=metrics_dict,
         )
 
+                        print("Bad value on saving", m, ":", self.metrics_dict[m])
+                        failed_to_save.append(m)
+                if failed_to_save:
+                    print(
+                        "Failed to save metrics: {}".format(",".join(failed_to_save))
+                    )
+                else:
+                    _print("Saved all metrics")
+        else:
+            _print("No metrics requested, skipping!")
+            retval = {}
+
+
     def _metrics_compute(
         self, type_name, compute_function, metrics, verbose, save, *args, **kwds
     ):
@@ -253,8 +266,17 @@ class VideoMetricsManager(MetricsManager):
             if save:
                 _print("Saving")
                 for m in metrics:
-                    self.save_metric(m)
-                _print("Saved")
+                    try:
+                        self.save_metric(m)
+                    except ValueError:
+                        print("Bad value on saving", m, ":", self.metrics_dict[m])
+                        failed_to_save.append(m)
+                if failed_to_save:
+                    print(
+                        "Failed to save metrics: {}".format(",".join(failed_to_save))
+                    )
+                else:
+                    _print("Saved")
         else:
             _print("No metrics requested, skipping!")
             retval = {}
